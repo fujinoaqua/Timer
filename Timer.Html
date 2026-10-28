@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Timer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+        
+        :root {
+            --sky-blue: #87CEEB;
+            --white: #FFFFFF;
+            --light-pink: #FFB6C1;
+            --yellow: #FFD700;
+        }
+        
+        body {
+            font-family: 'Comic Neue', cursive;
+            background-color: var(--sky-blue);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: url('https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/96f12a49-11c9-48fd-888d-36b6339451b0.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 30px;
+            padding: 30px;
+            margin: 50px 0;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2;
+            border: 5px dashed var(--light-pink);
+        }
+        
+        h1 {
+            color: #FF6B91;
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timer-display {
+            font-size: 4rem;
+            text-align: center;
+            margin: 30px 0;
+            color: #555;
+            background-color: var(--white);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 3px solid var(--light-pink);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Comic Neue', cursive;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .start {
+            background-color: #A7E8BD;
+            color: #1a6640;
+        }
+        
+        .pause {
+            background-color: #FFD166;
+            color: #945e00;
+        }
+        
+        .reset {
+            background-color: #FF9A8B;
+            color: #6e2a1a;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .mood-selector {
+            margin-top: 30px;
+        }
+        
+        .moods {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .mood {
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            background-color: var(--white);
+            border: 3px solid transparent;
+        }
+        
+        .mood:hover {
+            transform: scale(1.1);
+        }
+        
+        .mood.active {
+            border: 3px solid var(--light-pink);
+            box-shadow: 0 0 15px rgba(255, 182, 193, 0.5);
+        }
+        
+        .happy { background-color: #FFEE93; color: #8B8000; }
+        .sad { background-color: #B1D3FE; color: #0C3D92; }
+        .angry { background-color: #FF9B9B; color: #6B0504; }
+        .relaxed { background-color: #B5EAD7; color: #008B74; }
+        .excited { background-color: #FFB347; color: #8B4500; }
+        
+        .cloud {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            z-index: 1;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translateX(0) translateY(0); }
+            50% { transform: translateX(100px) translateY(20px); }
+            100% { transform: translateX(0) translateY(0); }
+        }
+        
+        .bird {
+            position: absolute;
+            width: 30px;
+            height: 20px;
+            background-image: url('https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/1b39f682-9268-4388-b205-44d3967f1183.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            animation: fly 20s infinite linear;
+            z-index: 1;
+        }
+        
+        @keyframes fly {
+            0% { transform: translateX(-100px) translateY(0); }
+            100% { transform: translateX(calc(100vw + 100px)) translateY(50px); }
+        }
+        
+        .sun {
+            position: absolute;
+            top: 50px;
+            right: 50px;
+            width: 80px;
+            height: 80px;
+            background-color: var(--yellow);
+            border-radius: 50%;
+            box-shadow: 0 0 40px var(--yellow);
+            animation: pulse 4s infinite alternate;
+            z-index: 1;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 40px var(--yellow); }
+            100% { transform: scale(1.05); box-shadow: 0 0 50px var(--yellow); }
+        }
+        
+        .stars {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .footer {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+            color: var(--white);
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .timer-display {
+                font-size: 3rem;
+            }
+            
+            button {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+            
+            .mood {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sun"></div>
+    
+    <!-- Clouds -->
+    <div class="cloud" style="width: 100px; height: 60px; top: 20%; left: 10%;"></div>
+    <div class="cloud" style="width: 150px; height: 90px; top: 30%; right: 15%;"></div>
+    <div class="cloud" style="width: 120px; height: 70px; top: 15%; right: 25%;"></div>
+    <div class="cloud" style="width: 80px; height: 50px; bottom: 20%; left: 20%;"></div>
+    
+    <!-- Birds -->
+    <div class="bird" style="top: 25%; animation-delay: 0s;"></div>
+    <div class="bird" style="top: 30%; animation-delay: 5s;"></div>
+    <div class="bird" style="top: 20%; animation-delay: 10s;"></div>
+    <div class="bird" style="top: 35%; animation-delay: 15s;"></div>
+    
+    <div class="container">
+        <h1>Kawaii Mood Timer ⏳</h1>
+        
+        <div class="timer-display" id="display">00:00:00</div>
+        
+        <div class="controls">
+            <button class="start" id="start">Start</button>
+            <button class="pause" id="pause">Pause</button>
+            <button class="reset" id="reset">Reset</button>
+        </div>
+        
+        <div class="mood-selector">
+            <h2>How are you feeling? 💭</h2>
+            <div class="moods">
+                <div class="mood happy" data-mood="happy">Happy 😊</div>
+                <div class="mood sad" data-mood="sad">Sad 😢</div>
+                <div class="mood angry" data-mood="angry">Angry 😠</div>
+                <div class="mood relaxed" data-mood="relaxed">Relaxed 😌</div>
+                <div class="mood excited" data-mood="excited">Excited 🤩</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        Made with ❤️ for a happier day!
+    </div>
+    
+    <script>
+        let timer;
+        let seconds = 0;
+        let minutes = 0;
+        let hours = 0;
+        let isRunning = false;
+        let currentMood = null;
+        
+        const display = document.getElementById('display');
+        const startBtn = document.getElementById('start');
+        const pauseBtn = document.getElementById('pause');
+        const resetBtn = document.getElementById('reset');
+        const moods = document.querySelectorAll('.mood');
+        
+        function updateDisplay() {
+            const hh = hours.toString().padStart(2, '0');
+            const mm = minutes.toString().padStart(2, '0');
+            const ss = seconds.toString().padStart(2, '0');
+            display.textContent = `${hh}:${mm}:${ss}`;
+        }
+        
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timer = setInterval(() => {
+                    seconds++;
+                    if (seconds === 60) {
+                        seconds = 0;
+                        minutes++;
+                        if (minutes === 60) {
+                            minutes = 0;
+                            hours++;
+                        }
+                    }
+                    updateDisplay();
+                }, 1000);
+            }
+        }
+        
+        function pauseTimer() {
+            clearInterval(timer);
+            isRunning = false;
+        }
+        
+        function resetTimer() {
+            clearInterval(timer);
+            isRunning = false;
+            seconds = 0;
+            minutes = 0;
+            hours = 0;
+            updateDisplay();
+        }
+        
+        function showStars(amount, duration) {
+            const container = document.body;
+            
+            for (let i = 0; i < amount; i++) {
+                const star = document.createElement('div');
+                star.className = 'stars';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                star.style.width = (Math.random() * 10 + 5) + 'px';
+                star.style.height = star.style.width;
+                
+                container.appendChild(star);
+                
+                setTimeout(() => {
+                    star.style.opacity = '1';
+                    
+                    setTimeout(() => {
+                        star.style.opacity = '0';
+                        
+                        setTimeout(() => {
+                            star.remove();
+                        }, 500);
+                    }, duration);
+                }, i * 100);
+            }
+        }
+        
+        startBtn.addEventListener('click', startTimer);
+        pauseBtn.addEventListener('click', pauseTimer);
+        resetBtn.addEventListener('click', resetTimer);
+        
+        moods.forEach(mood => {
+            mood.addEventListener('click', () => {
+                moods.forEach(m => m.classList.remove('active'));
+                mood.classList.add('active');
+                currentMood = mood.dataset.mood;
+                
+                // Show different effects based on mood
+                switch(currentMood) {
+                    case 'happy':
+                        document.body.style.background = 'linear-gradient(to bottom, #87CEEB, #E0F7FA)';
+                        showStars(30, 2000);
+                        break;
+                    case 'sad':
+                        document.body.style.background = 'linear-gradient(to bottom, #87CEEB, #B0C4DE)';
+                        // Add rain effect
+                        break;
+                    case 'angry':
+                        document.body.style.background = 'linear-gradient(to bottom, #FF5733, #FFC300)';
+                        // Add fire effect
+                        break;
+                    case 'relaxed':
+                        document.body.style.background = 'linear-gradient(to bottom, #87CEEB, #AFEEEE)';
+                        break;
+                    case 'excited':
+                        document.body.style.background = 'linear-gradient(to bottom, #87CEEB, #FF9966)';
+                        showStars(50, 1500);
+                        break;
+                }
+            });
+        });
+        
+        // Initial display setup
+        updateDisplay();
+        
+        // Add some random stars in the background
+        setTimeout(() => {
+            showStars(20, 3000);
+            setInterval(() => {
+                showStars(5, 1500);
+            }, 5000);
+        }, 1000);
+    </script>
+</body>
+</html>
+
